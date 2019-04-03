@@ -21,14 +21,24 @@ if (isset($object -> errors) || !$object || empty($object)) {
 }
 
 $response = null;
+$allIps = [];
 
 if (file_exists(__DIR__."/local-blacklist.conf") && is_file(__DIR__."/local-blacklist.conf")) {
-    $response = file_get_contents(__DIR__."/local-blacklist.conf").PHP_EOL;
+    $localBlacklist = file_get_contents(__DIR__."/local-blacklist.conf").PHP_EOL;
+    $newLineArray = explode(PHP_EOL, $response);
+    foreach ($newLineArray as $key => $line) {
+        if (substr($line, 0, 1) === "#" || strlen($line) === 0) {
+            continue;
+        }
+        $justIpAddress = str_replace(["deny", ";", " "], ["", "", ""], $line);
+        $allIps[$justIpAddress] = $justIpAddress;
+        $response .= "deny ".$justIpAddress.";".PHP_EOL;
+    }
 }
 
 $count = 0;
 foreach ($object -> data as $key => $values) {
-    if ($values -> abuseConfidenceScore >= ABUSE_CONFIDENCE_SCORE) {
+    if ($values -> abuseConfidenceScore >= ABUSE_CONFIDENCE_SCORE && !in_array($values -> ipAddress, $allIps)) {
         $response .= "deny ".$values -> ipAddress.";".PHP_EOL;
         $count++;
     }
