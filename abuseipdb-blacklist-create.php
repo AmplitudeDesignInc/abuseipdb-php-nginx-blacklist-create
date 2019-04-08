@@ -38,6 +38,9 @@ if (file_exists(__DIR__."/local-blacklist.conf") && is_file(__DIR__."/local-blac
 
 $count = 0;
 foreach ($object -> data as $key => $values) {
+    if (!isset($values -> abuseConfidenceScore) || !isset($value -> ipAddress)) {
+        continue;
+    }
     if ($values -> abuseConfidenceScore >= ABUSE_CONFIDENCE_SCORE && !in_array($values -> ipAddress, $allIps)) {
         $response .= "deny ".$values -> ipAddress.";".PHP_EOL;
         $count++;
