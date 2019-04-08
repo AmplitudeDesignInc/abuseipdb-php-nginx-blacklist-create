@@ -14,6 +14,7 @@ $fileContents = file_get_contents(__DIR__."/abuseipdb-data.json");
 
 $object = json_decode($fileContents);
 
+// Print errors and exit the script if there was a problem with the request.
 if (isset($object -> errors) || !$object || empty($object)) {
     print PHP_EOL.$object -> errors[0] -> detail.PHP_EOL.PHP_EOL;
     unlink(__DIR__."/abuseipdb-data.json");
@@ -21,18 +22,26 @@ if (isset($object -> errors) || !$object || empty($object)) {
 }
 
 $response = null;
+// $allIps is used to contain all unique IPs.
 $allIps = [];
 
+// Load the local blacklist if it is available.
 if (file_exists(__DIR__."/local-blacklist.conf") && is_file(__DIR__."/local-blacklist.conf")) {
     $localBlacklist = file_get_contents(__DIR__."/local-blacklist.conf").PHP_EOL;
+    // Create an array exploded by a new line.
     $newLineArray = explode(PHP_EOL, $response);
+    // If this is a commented line then continue.
     foreach ($newLineArray as $key => $line) {
         if (substr($line, 0, 1) === "#" || strlen($line) === 0) {
             continue;
         }
+        // Get just the IP address from the line.
         $justIpAddress = str_replace(["deny", ";", " "], ["", "", ""], $line);
+        // Add the ip to the all IPs array.
+        if (!array_key_exists($justIpAddress, $allIps)) {
+            $response .= "deny ".$justIpAddress.";".PHP_EOL;
+        }
         $allIps[$justIpAddress] = $justIpAddress;
-        $response .= "deny ".$justIpAddress.";".PHP_EOL;
     }
 }
 
