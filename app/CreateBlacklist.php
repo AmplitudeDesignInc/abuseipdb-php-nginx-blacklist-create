@@ -112,7 +112,7 @@ class CreateBlacklist
      */
     private function getCustomDenyList($line)
     {
-        if (substr($line, 0, 1) === "#" || strlen($line) === 0) {
+        if (substr(trim($line), 0, 1) === "#" || strlen(trim($line)) === 0) {
             return;
         }
         // Get just the IP address from the line.
