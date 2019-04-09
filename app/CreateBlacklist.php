@@ -40,9 +40,16 @@ class CreateBlacklist
     public function createBlacklist($abuseIpDbJsonFilePath, $localCustomBlacklistPath = null)
     {
         $responseString = null;
-        $fileContents = file_get_contents($abuseIpDbJsonFilePath);
-        $object = json_decode($fileContents);
+        $fileOutputPath = $this->rootPath."/nginx-abuseipdb-blacklist.conf";
 
+        $fileContents = file_get_contents($abuseIpDbJsonFilePath);
+
+        if ($fileContents === false) {
+            $responseString = "The json response could not be opened.".PHP_EOL;
+            return $responseString;
+        }
+
+        $object = json_decode($fileContents);
         if (is_null($object)) {
             $responseString = "The json response could not be decoded.".PHP_EOL;
             return $responseString;
@@ -61,6 +68,7 @@ class CreateBlacklist
             $this -> unlinkAbuseIpDbResponseFile();
             return $responseString;
         }
+
         // Make sure the custom blacklist is readable.
         if (!is_null($localCustomBlacklistPath) && !is_readable($localCustomBlacklistPath)) {
             $responseString = PHP_EOL."You have custom blacklist path, ".$localCustomBlacklistPath.", and the file is not readable.";
@@ -76,7 +84,14 @@ class CreateBlacklist
         // Handle the AbuseIpDb $object -> data.
         array_map([$this, 'getAbuseIpDbDenyList'], $object -> data);
 
-        file_put_contents($this->rootPath."/nginx-abuseipdb-blacklist.conf", $this -> denyListOutput);
+        $filePutResult = file_put_contents($fileOutputPath, $this -> denyListOutput);
+
+        // Check for an instance where $localCustomBlacklistPath is not null, but cannot be found.
+        if (false === $filePutResult) {
+            $responseString = PHP_EOL."Unable to create the file: ".$fileOutputPath.".";
+            return $responseString;
+        }
+
         if (is_file($this->rootPath."/abuseipdb-data.json")) {
             $this -> unlinkAbuseIpDbResponseFile();
         }
