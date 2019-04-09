@@ -33,6 +33,8 @@ class CreateBlacklistTest extends TestCase
             dirname(__DIR__).'/expected-file-to-match.conf',
             file_get_contents(dirname(dirname(__DIR__)).'/nginx-abuseipdb-blacklist.conf')
         );
+        //  Check that the file was removed.
+        $this -> assertTrue(!file_exists($this -> obj -> rootPath."/abuseipdb-data.json"));
     }
 
     /**

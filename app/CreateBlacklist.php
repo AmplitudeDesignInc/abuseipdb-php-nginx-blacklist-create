@@ -16,8 +16,9 @@ class CreateBlacklist
 
     /**
      * Creates the blacklist file.
-     * @param  string $responseFilePath The full path to the file containing the AbuseIPDB response.
-     * @return string                   The string response.
+     * @param  string $responseFilePath   The full path to the file containing the AbuseIPDB response.
+     * @param  string $localBlacklistPath The full path to the local custom file containing deny statements.
+     * @return string                     The string response.
      */
     public function createBlacklist($responseFilePath, $localBlacklistPath)
     {
