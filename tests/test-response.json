@@ -1,0 +1,22 @@
+{
+  "meta": {
+    "generatedAt": "2018-12-21T16:00:04+00:00"
+  },
+  "data": [
+    {
+      "ipAddress": "5.188.10.179",
+      "totalReports": 560,
+      "abuseConfidenceScore": 100
+    },
+    {
+      "ipAddress": "185.222.209.14",
+      "totalReports": 529,
+      "abuseConfidenceScore": 100
+    },
+    {
+      "ipAddress": "191.96.249.183",
+      "totalReports": 325,
+      "abuseConfidenceScore": 100
+    }
+  ]
+}
