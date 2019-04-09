@@ -37,7 +37,7 @@ class CreateBlacklist
      * @param  string $localCustomBlacklistPath The full path to the local custom file containing deny statements.
      * @return string                           The string response.
      */
-    public function createBlacklist($abuseIpDbJsonFilePath, $localCustomBlacklistPath)
+    public function createBlacklist($abuseIpDbJsonFilePath, $localCustomBlacklistPath = null)
     {
         $responseString = null;
         $fileContents = file_get_contents($abuseIpDbJsonFilePath);
@@ -55,25 +55,29 @@ class CreateBlacklist
             return $responseString;
         }
 
-        // Load the local blacklist if it is available.
-        if (file_exists($localCustomBlacklistPath) && is_file($localCustomBlacklistPath)) {
-            $localBlacklist = file_get_contents($localCustomBlacklistPath);
-            // Create an array exploded by a new line.
-            $newLineArray = explode(PHP_EOL, $localBlacklist);
+        // Check for an instance where $localCustomBlacklistPath is not null, but cannot be found.
+        if (!is_null($localCustomBlacklistPath) && !is_file($localCustomBlacklistPath)) {
+            $responseString = PHP_EOL."You have custom blacklist path, ".$localCustomBlacklistPath.", and the file does not exist.";
+            $this -> unlinkAbuseIpDbResponseFile();
+            return $responseString;
+        }
+        // Make sure the custom blacklist is readable.
+        if (!is_null($localCustomBlacklistPath) && !is_readable($localCustomBlacklistPath)) {
+            $responseString = PHP_EOL."You have custom blacklist path, ".$localCustomBlacklistPath.", and the file is not readable.";
+            $this -> unlinkAbuseIpDbResponseFile();
+            return $responseString;
+        }
 
-            if (is_array($newLineArray)) {
-                // If this is a commented line then continue.
-                array_map([$this, 'getCustomDenyList'], $newLineArray);
-            }
+        // Load the local blacklist if it is available.
+        if (is_file($localCustomBlacklistPath)) {
+            $this -> loadLocalCustomBlacklist($localCustomBlacklistPath);
         }
 
         // Handle the AbuseIpDb $object -> data.
         array_map([$this, 'getAbuseIpDbDenyList'], $object -> data);
 
         file_put_contents($this->rootPath."/nginx-abuseipdb-blacklist.conf", $this -> denyListOutput);
-        if (file_exists($this->rootPath."/abuseipdb-data.json")
-            && is_file($this->rootPath."/abuseipdb-data.json")
-        ) {
+        if (is_file($this->rootPath."/abuseipdb-data.json")) {
             $this -> unlinkAbuseIpDbResponseFile();
         }
         $responseString .= PHP_EOL;
@@ -83,6 +87,25 @@ class CreateBlacklist
         $responseString .= "You will also want to reload nginx. For example, sudo service nginx reload on Ubuntu.".PHP_EOL;
 
         return $responseString;
+    }
+
+    /**
+     * Loads the local custom blacklist file.
+     * @param  string $localCustomBlacklistPath The path to the custom blacklist.
+     * @return null
+     */
+    private function loadLocalCustomBlacklist($localCustomBlacklistPath)
+    {
+        $localBlacklist = file_get_contents($localCustomBlacklistPath);
+        if ($localBlacklist === false) {
+            return;
+        }
+        // Create an array exploded by a new line.
+        $newLineArray = explode(PHP_EOL, $localBlacklist);
+
+        if (is_array($newLineArray)) {
+            array_map([$this, 'getCustomDenyList'], $newLineArray);
+        }
     }
 
     /**
