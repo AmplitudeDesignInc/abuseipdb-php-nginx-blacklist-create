@@ -13,4 +13,4 @@ exec("curl -G https://api.abuseipdb.com/api/v2/blacklist \
 
 $createBlackList = new App\CreateBlacklist();
 $createBlackList -> rootPath = __DIR__;
-print $createBlackList -> createBlackList('abuseipdb-data.json', 'local-blacklist.conf');
+print $createBlackList -> createBlackList(__DIR__.'/abuseipdb-data.json', __DIR__.'/local-blacklist.conf');
