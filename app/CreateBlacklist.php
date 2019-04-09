@@ -56,13 +56,13 @@ class CreateBlacklist
 
         // Print errors and exit the script if there was are errors in the response.
         if (isset($object -> errors) || !$object || empty($object)) {
-            $this -> unlinkAbuseIpDbResponseFile();
             throw new Exception(PHP_EOL.$object -> errors[0] -> detail.PHP_EOL.PHP_EOL, 1);
         }
 
-
-        // Load the local blacklist if it is available.
-        $this -> loadLocalCustomBlacklist($localCustomBlacklistPath);
+        if (!is_null($localCustomBlacklistPath)) {
+            // Load the local blacklist if it is available.
+            $this -> loadLocalCustomBlacklist($localCustomBlacklistPath);
+        }
 
         // Handle the AbuseIpDb $object -> data.
         array_map([$this, 'getAbuseIpDbDenyList'], $object -> data);
@@ -74,9 +74,8 @@ class CreateBlacklist
             throw new Exception(PHP_EOL."Unable to create the file: ".$fileOutputPath.".");
         }
 
-        if (is_file($this->rootPath."/abuseipdb-data.json")) {
-            $this -> unlinkAbuseIpDbResponseFile();
-        }
+        $this -> unlinkAbuseIpDbResponseFile();
+
         $responseString .= PHP_EOL;
         $responseString .= PHP_EOL;
         $responseString .= "Added ".$this -> count." ip addresses to your blacklist.".PHP_EOL;
@@ -98,7 +97,6 @@ class CreateBlacklist
             throw new Exception(PHP_EOL."The AbuseIPDb json file path, ".$abuseIpDbJsonFilePath.", was not found.".PHP_EOL, 1);
         }
         if (!is_readable($abuseIpDbJsonFilePath)) {
-            $this -> unlinkAbuseIpDbResponseFile();
             throw new Exception(PHP_EOL."The AbuseIPDb json file path, ".$abuseIpDbJsonFilePath.", was not found.".PHP_EOL, 1);
         }
     }
@@ -195,7 +193,7 @@ class CreateBlacklist
      */
     private function unlinkAbuseIpDbResponseFile()
     {
-        if (!file_exists($this->rootPath."/abuseipdb-data.json")) {
+        if (!is_file($this->rootPath."/abuseipdb-data.json")) {
             return;
         }
         unlink($this->rootPath."/abuseipdb-data.json");
