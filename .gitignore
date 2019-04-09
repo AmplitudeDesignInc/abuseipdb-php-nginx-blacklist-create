@@ -4,3 +4,4 @@ abuseipdb-data.json
 local-blacklist.conf
 build/
 /vendor/
+.DS_Store
