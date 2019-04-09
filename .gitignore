@@ -2,3 +2,5 @@ config.php
 nginx-abuseipdb-blacklist.conf
 abuseipdb-data.json
 local-blacklist.conf
+build/
+/vendor/
