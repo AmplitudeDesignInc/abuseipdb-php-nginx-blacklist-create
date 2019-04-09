@@ -10,4 +10,6 @@
 
 5. Run "php vendor/bin/phpunit" to run the tests.
 
-6. Issue a pull request.
+6. Check the phpunit coverage reports in build/coverage/
+
+7. Issue a pull request.
