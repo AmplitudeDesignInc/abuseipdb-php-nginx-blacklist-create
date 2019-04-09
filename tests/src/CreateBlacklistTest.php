@@ -19,14 +19,31 @@ class CreateBlacklistTest extends TestCase
         $this -> obj -> rootPath = dirname(dirname(__DIR__));
     }
 
+/**
+     * This is the positive AbuseIPDB response test.
+     * @return null
+     */
+    public function testMissingCustomNginxBlacklist()
+    {
+        $this -> expectException('\Exception');
+        $response = $this -> obj -> createBlackList(
+            dirname(__DIR__).'/test-abuseipdb-response.jsonlj',
+            dirname(__DIR__).'/test-local-blacklistasdf.conf'
+        );
+        //  Check that the file was removed.
+        $this -> assertTrue(!file_exists($this -> obj -> rootPath."/abuseipdb-data.json"));
+    }
+
+
     /**
      * This is the positive AbuseIPDB response test.
      * @return null
      */
     public function testCreateNginxBlacklist()
     {
+        $this -> expectException('\Exception');
         $response = $this -> obj -> createBlackList(
-            dirname(__DIR__).'/test-abuseipdb-response.json',
+            dirname(__DIR__).'/test-abuseipdb-response.jsonlj',
             dirname(__DIR__).'/test-local-blacklist.conf'
         );
         $this->assertStringMatchesFormatFile(
@@ -43,9 +60,10 @@ class CreateBlacklistTest extends TestCase
      */
     public function testNullResponseCreateNginxBlacklist()
     {
+        $this -> expectException('\Exception');
         $response = $this -> obj -> createBlackList(
-            dirname(__DIR__).'/test-local-blacklist.conf',
-            dirname(__DIR__).'/test-null-response.json'
+            dirname(__DIR__).'/test-null-response.json',
+            dirname(__DIR__).'/test-local-blacklist.conf'
         );
         $this -> assertTrue(is_string($response));
         // Make sure that we don't remove the nginx-abuseipdb-blacklist.conf blacklist
@@ -59,6 +77,7 @@ class CreateBlacklistTest extends TestCase
      */
     public function testErrorResponseCreateNginxBlacklist()
     {
+        $this -> expectException('\Exception');
         $response = $this -> obj -> createBlackList(
             dirname(__DIR__).'/test-abuseipdb-error-response.json',
             dirname(__DIR__).'/test-local-blacklist.conf'
