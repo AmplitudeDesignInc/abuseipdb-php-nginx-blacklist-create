@@ -18,6 +18,11 @@ class CreateBlacklistTest extends TestCase
         $this -> obj = new CreateBlacklist();
         $this -> obj -> rootPath = dirname(dirname(__DIR__));
     }
+
+    /**
+     * This is the positive AbuseIPDB response test.
+     * @return null
+     */
     public function testCreateNginxBlacklist()
     {
         $response = $this -> obj -> createBlackList(
@@ -30,6 +35,10 @@ class CreateBlacklistTest extends TestCase
         );
     }
 
+    /**
+     * Tests if the response is null from AbuseIPDB
+     * @return null
+     */
     public function testNullResponseCreateNginxBlacklist()
     {
         $response = $this -> obj -> createBlackList(
@@ -37,8 +46,15 @@ class CreateBlacklistTest extends TestCase
             dirname(__DIR__).'/test-null-response.json'
         );
         $this -> assertTrue(is_string($response));
+        // Make sure that we don't remove the nginx-abuseipdb-blacklist.conf blacklist
+        // even if the response isn't working.
+        $this -> assertTrue(file_exists($this -> obj -> rootPath.'/nginx-abuseipdb-blacklist.conf'));
     }
 
+    /**
+     * This tests if the AbuseIPDB returns errors.
+     * @return null
+     */
     public function testErrorResponseCreateNginxBlacklist()
     {
         $response = $this -> obj -> createBlackList(
@@ -48,6 +64,11 @@ class CreateBlacklistTest extends TestCase
         $this -> assertTrue(is_string($response));
         $this -> assertTrue(!file_exists($this -> obj ->rootPath."/abuseipdb-data.json"));
     }
+
+    /**
+     * Tests if there is not confidence score (edge case).
+     * @return null
+     */
     public function testNoConfidenceScoreCreateNginxBlacklist()
     {
         $response = $this -> obj -> createBlackList(
@@ -57,6 +78,10 @@ class CreateBlacklistTest extends TestCase
         $this -> assertTrue(is_string($response));
     }
 
+    /**
+     * Tests the unlinkAbuseIpDbResponseFile method.
+     * @return null
+     */
     public function testUnlinkAbuseIpDbResponseFile()
     {
         file_put_contents($this -> obj -> rootPath."/abuseipdb-data.json", "");
