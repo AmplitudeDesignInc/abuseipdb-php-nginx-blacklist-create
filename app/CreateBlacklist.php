@@ -44,24 +44,8 @@ class CreateBlacklist
         $responseString = null;
         $fileOutputPath = $this->rootPath."/nginx-abuseipdb-blacklist.conf";
 
-        // Check for an instance where $localCustomBlacklistPath is not null, but cannot be found.
-        if (!is_null($localCustomBlacklistPath) && !is_file($localCustomBlacklistPath)) {
-            throw new Exception(PHP_EOL."You have custom blacklist path, ".$localCustomBlacklistPath.", and the file does not exist.", 1);
-        }
-
-        // Make sure the custom blacklist is readable.
-        if (!is_null($localCustomBlacklistPath) && !is_readable($localCustomBlacklistPath)) {
-            throw new Exception(PHP_EOL."You have custom blacklist path, ".$localCustomBlacklistPath.", and the file is not readable.", 1);
-        }
-
-        if (!is_file($abuseIpDbJsonFilePath)) {
-            throw new Exception(PHP_EOL."The AbuseIPDb json file path, ".$abuseIpDbJsonFilePath.", was not found.".PHP_EOL, 1);
-        }
-
-        if (!is_readable($abuseIpDbJsonFilePath)) {
-            $this -> unlinkAbuseIpDbResponseFile();
-            throw new Exception(PHP_EOL."The AbuseIPDb json file path, ".$abuseIpDbJsonFilePath.", was not found.".PHP_EOL, 1);
-        }
+        $this -> checkLocalBlacklistPath($localCustomBlacklistPath);
+        $this -> checkAbuseIpDbJsonFilePath($abuseIpDbJsonFilePath);
 
         $fileContents = file_get_contents($abuseIpDbJsonFilePath);
         // Decode the contents of the JSON file.
@@ -100,6 +84,42 @@ class CreateBlacklist
         $responseString .= "You will also want to reload nginx. For example, sudo service nginx reload on Ubuntu.".PHP_EOL;
 
         return $responseString;
+    }
+
+    /**
+     * Checks the $abuseIpDbJsonFilePath.
+     * @param  string $abuseIpDbJsonFilePath
+     * @throws Exception
+     * @return null
+     */
+    private function checkAbuseIpDbJsonFilePath($abuseIpDbJsonFilePath)
+    {
+        if (!is_file($abuseIpDbJsonFilePath)) {
+            throw new Exception(PHP_EOL."The AbuseIPDb json file path, ".$abuseIpDbJsonFilePath.", was not found.".PHP_EOL, 1);
+        }
+        if (!is_readable($abuseIpDbJsonFilePath)) {
+            $this -> unlinkAbuseIpDbResponseFile();
+            throw new Exception(PHP_EOL."The AbuseIPDb json file path, ".$abuseIpDbJsonFilePath.", was not found.".PHP_EOL, 1);
+        }
+    }
+
+    /**
+     * Checks the $localCustomBlacklistPath.
+     * @param  string $localCustomBlacklistPath
+     * @throws Exception
+     * @return null
+     */
+    private function checkLocalBlacklistPath($localCustomBlacklistPath)
+    {
+        // Check for an instance where $localCustomBlacklistPath is not null, but cannot be found.
+        if (!is_null($localCustomBlacklistPath) && !is_file($localCustomBlacklistPath)) {
+            throw new Exception(PHP_EOL."You have custom blacklist path, ".$localCustomBlacklistPath.", and the file does not exist.", 1);
+        }
+
+        // Make sure the custom blacklist is readable.
+        if (!is_null($localCustomBlacklistPath) && !is_readable($localCustomBlacklistPath)) {
+            throw new Exception(PHP_EOL."You have custom blacklist path, ".$localCustomBlacklistPath.", and the file is not readable.", 1);
+        }
     }
 
     /**
