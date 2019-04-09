@@ -60,8 +60,11 @@ class CreateBlacklist
             $localBlacklist = file_get_contents($localCustomBlacklistPath).PHP_EOL;
             // Create an array exploded by a new line.
             $newLineArray = explode(PHP_EOL, $localBlacklist);
-            // If this is a commented line then continue.
-            array_map([$this, 'getCustomDenyList'], $newLineArray);
+
+            if (is_array($newLineArray)) {
+                // If this is a commented line then continue.
+                array_map([$this, 'getCustomDenyList'], $newLineArray);
+            }
         }
 
         // Handle the AbuseIpDb $object -> data.
