@@ -57,7 +57,7 @@ class CreateBlacklist
 
         // Load the local blacklist if it is available.
         if (file_exists($localCustomBlacklistPath) && is_file($localCustomBlacklistPath)) {
-            $localBlacklist = file_get_contents($localCustomBlacklistPath).PHP_EOL;
+            $localBlacklist = file_get_contents($localCustomBlacklistPath);
             // Create an array exploded by a new line.
             $newLineArray = explode(PHP_EOL, $localBlacklist);
 
