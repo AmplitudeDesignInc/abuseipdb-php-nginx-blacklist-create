@@ -2,11 +2,6 @@
     "name": "amplitudedesigninc/abuseipdb-php-nginx-blacklist-create",
     "description": "This is a simple PHP to generate an Nginx blacklist using PHP and the AbuseIPDB API.",
     "type": "project",
-    "require-dev": {
-        "php": ">=7.1.0",
-        "ext-xdebug": "*",
-        "phpunit/phpunit": "^7.5"
-    },
     "license": "MIT",
     "authors": [
         {
@@ -14,6 +9,11 @@
             "email": "kevin@amplitudedesign.com"
         }
     ],
+    "require-dev": {
+        "php": "^7.1",
+        "ext-xdebug": "*",
+        "phpunit/phpunit": "^7.5"
+    },
     "autoload-dev": {
         "psr-4": {
             "App\\": "app"

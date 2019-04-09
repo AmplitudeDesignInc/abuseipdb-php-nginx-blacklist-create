@@ -54,3 +54,7 @@ Creates a blacklist file for use in your Nginx configuration. Please see www.abu
 2. Test the Nginx configuration, "sudo nginx -t"
 
 3. If all is well, reload Nginx. On Ubuntu, "sudo service nginx reload"
+
+## Contributing
+
+Please see the [CONTRIBUTING.md](https://github.com/AmplitudeDesignInc/abuseipdb-php-nginx-blacklist-create/blob/master/CONTRIBUTING.md) for more about contributing to this package.
