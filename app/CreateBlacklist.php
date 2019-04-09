@@ -13,29 +13,42 @@ class CreateBlacklist
      */
     public $rootPath;
 
+    /**
+     * The array of all IPs to use for filtering duplicates.
+     * @var array
+     */
+    private $allIps = [];
+
+    /**
+     * The string for the final deny list.
+     * @var string
+     */
+    public $denyListOutput = null;
+
+    /**
+     * The total count of the IPs added to the list.
+     * @var integer
+     */
+    private $count = 0;
 
     /**
      * Creates the blacklist file.
-     * @param  string $responseFilePath   The full path to the file containing the AbuseIPDB response.
-     * @param  string $localBlacklistPath The full path to the local custom file containing deny statements.
-     * @return string                     The string response.
+     * @param  string $abuseIpDbJsonFilePath    The full path to the file containing the AbuseIPDB response.
+     * @param  string $localCustomBlacklistPath The full path to the local custom file containing deny statements.
+     * @return string                           The string response.
      */
-    public function createBlacklist($responseFilePath, $localBlacklistPath)
+    public function createBlacklist($abuseIpDbJsonFilePath, $localCustomBlacklistPath)
     {
         $responseString = null;
-        $fileContents = file_get_contents($responseFilePath);
+        $fileContents = file_get_contents($abuseIpDbJsonFilePath);
         $object = json_decode($fileContents);
-        $response = null;
-        // $allIps is used to contain all unique IPs.
-        $allIps = [];
-        $count = 0;
 
         if (is_null($object)) {
             $responseString = "The json response could not be decoded.".PHP_EOL;
             return $responseString;
         }
 
-        // Print errors and exit the script if there was a problem with the request.
+        // Print errors and exit the script if there was are errors in the response.
         if (isset($object -> errors) || !$object || empty($object)) {
             $responseString = PHP_EOL.$object -> errors[0] -> detail.PHP_EOL.PHP_EOL;
             $this -> unlinkAbuseIpDbResponseFile();
@@ -43,41 +56,18 @@ class CreateBlacklist
         }
 
         // Load the local blacklist if it is available.
-        if (file_exists($localBlacklistPath) && is_file($localBlacklistPath)) {
-            $localBlacklist = file_get_contents($localBlacklistPath).PHP_EOL;
+        if (file_exists($localCustomBlacklistPath) && is_file($localCustomBlacklistPath)) {
+            $localBlacklist = file_get_contents($localCustomBlacklistPath).PHP_EOL;
             // Create an array exploded by a new line.
             $newLineArray = explode(PHP_EOL, $localBlacklist);
             // If this is a commented line then continue.
-            foreach ($newLineArray as $key => $line) {
-                if (substr($line, 0, 1) === "#" || strlen($line) === 0) {
-                    continue;
-                }
-                // Get just the IP address from the line.
-                $justIpAddress = $this -> filterJustIp($line);
-                // Add the ip to the all IPs array.
-                if (!array_key_exists($justIpAddress, $allIps)) {
-                    $response .= "deny ".$justIpAddress.";".PHP_EOL;
-                    $count++;
-                }
-                $allIps[$justIpAddress] = $justIpAddress;
-            }
+            array_map([$this, 'getCustomDenyList'], $newLineArray);
         }
 
-        foreach ($object -> data as $key => $values) {
-            if (!property_exists($values, 'abuseConfidenceScore')
-                || !property_exists($values, 'ipAddress')
-            ) {
-                continue;
-            }
-            if ($values -> abuseConfidenceScore >= ABUSE_CONFIDENCE_SCORE
-                && !in_array($values -> ipAddress, $allIps)
-            ) {
-                $response .= "deny ".$values -> ipAddress.";".PHP_EOL;
-                $count++;
-            }
-        }
+        // Handle the AbuseIpDb $object -> data.
+        array_map([$this, 'getAbuseIpDbDenyList'], $object -> data);
 
-        file_put_contents($this->rootPath."/nginx-abuseipdb-blacklist.conf", $response);
+        file_put_contents($this->rootPath."/nginx-abuseipdb-blacklist.conf", $this -> denyListOutput);
         if (file_exists($this->rootPath."/abuseipdb-data.json")
             && is_file($this->rootPath."/abuseipdb-data.json")
         ) {
@@ -85,11 +75,52 @@ class CreateBlacklist
         }
         $responseString .= PHP_EOL;
         $responseString .= PHP_EOL;
-        $responseString .= "Added ".$count." ip addresses to your blacklist.".PHP_EOL;
+        $responseString .= "Added ".$this -> count." ip addresses to your blacklist.".PHP_EOL;
         $responseString .= "You can now test the configuration: nginx -t".PHP_EOL;
         $responseString .= "You will also want to reload nginx. For example, sudo service nginx reload on Ubuntu.".PHP_EOL;
 
         return $responseString;
+    }
+
+    /**
+     * Use with array_map to get the AbuseIpDB deny list.
+     * @param  array $ipObject The IP address object.
+     * @return null
+     */
+    private function getAbuseIpDbDenyList($ipObject)
+    {
+        if (!property_exists($ipObject, 'abuseConfidenceScore')
+            || !property_exists($ipObject, 'ipAddress')
+        ) {
+            return;
+        }
+        if ($ipObject -> abuseConfidenceScore >= ABUSE_CONFIDENCE_SCORE
+            && !in_array($ipObject -> ipAddress, $this -> allIps)
+        ) {
+            $this -> denyListOutput .= "deny ".$ipObject -> ipAddress.";".PHP_EOL;
+            $this -> count++;
+        }
+    }
+
+    /**
+     * Used with the array_map to filter the custom deny list.
+     * @param  string $line The singular line from the custom blacklist.
+     * @return null
+     */
+    private function getCustomDenyList($line)
+    {
+        if (substr($line, 0, 1) === "#" || strlen($line) === 0) {
+            return;
+        }
+        // Get just the IP address from the line.
+        $justIpAddress = $this -> filterJustIp($line);
+        // Add the ip to the all IPs array.
+        if (!array_key_exists($justIpAddress, $this -> allIps)) {
+            // Add the ip to the response string.
+            $this -> denyListOutput .= "deny ".$justIpAddress.";".PHP_EOL;
+            $this -> count++;
+        }
+        $this -> allIps[$justIpAddress] = $justIpAddress;
     }
 
     /**
