@@ -67,7 +67,7 @@ class CreateBlacklist
         // Handle the AbuseIpDb $object -> data.
         array_map([$this, 'getAbuseIpDbDenyList'], $object -> data);
 
-        $filePutResult = file_put_contents($fileOutputPath, $this -> denyListOutput);
+        $filePutResult = @file_put_contents($fileOutputPath, $this -> denyListOutput);
 
         // Check for an instance where file_get_contents fails.
         if (false === $filePutResult) {
@@ -97,7 +97,7 @@ class CreateBlacklist
             throw new Exception(PHP_EOL."The AbuseIPDb json file path, ".$abuseIpDbJsonFilePath.", was not found.".PHP_EOL, 1);
         }
         if (!is_readable($abuseIpDbJsonFilePath)) {
-            throw new Exception(PHP_EOL."The AbuseIPDb json file path, ".$abuseIpDbJsonFilePath.", was not found.".PHP_EOL, 1);
+            throw new Exception(PHP_EOL."The AbuseIPDb json file path, ".$abuseIpDbJsonFilePath.", was not readable.".PHP_EOL, 1);
         }
     }
 
