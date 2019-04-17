@@ -11,10 +11,15 @@ exec("curl -G https://api.abuseipdb.com/api/v2/blacklist \
   -H \"Key: ".ABUSE_IP_DB_KEY."\" \
   -H \"Accept: application/json\" > abuseipdb-data.json");
 
+$customBlacklist = null;
+if (file_exists(__DIR__.'/local-blacklist.conf') && is_file(__DIR__.'/local-blacklist.conf')) {
+  $customBlacklist = __DIR__.'/local-blacklist.conf';
+}
+
 try {
     $createBlackList = new App\CreateBlacklist();
     $createBlackList -> rootPath = __DIR__;
-    print $createBlackList -> createBlackList(__DIR__.'/abuseipdb-data.json', __DIR__.'/local-blacklist.conf');
+    print $createBlackList -> createBlackList(__DIR__.'/abuseipdb-data.json', $customBlacklist);
 } catch(\Exception $e) {
     print $e->getMessage();
 }
