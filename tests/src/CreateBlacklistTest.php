@@ -42,6 +42,7 @@ class CreateBlacklistTest extends TestCase
      */
     public function testCreateNginxBlacklist()
     {
+        $this -> assertTrue(false);
         $response = $this -> obj -> createBlackList(
             dirname(__DIR__).'/test-abuseipdb-response.json',
             dirname(__DIR__).'/test-local-blacklist.conf'
