@@ -10,4 +10,5 @@ before_script:
     - travis_retry composer install --no-interaction --prefer-source
     - cp config.dist.php config.php
 script:
+    - vendor/bin/phpcs --standard=PSR2 app/
     - vendor/bin/phpunit --coverage-clover=coverage.xml

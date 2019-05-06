@@ -11,30 +11,35 @@ class CreateBlacklist
 {
     /**
      * The root path to the directory where abuseipdb-blacklist-create.php is located.
+     *
      * @var string
      */
     public $rootPath;
 
     /**
      * The array of all IPs to use for filtering duplicates.
+     *
      * @var array
      */
     private $allIps = [];
 
     /**
      * The string for the final deny list.
+     *
      * @var string
      */
     public $denyListOutput = null;
 
     /**
      * The total count of the IPs added to the list.
+     *
      * @var integer
      */
     private $count = 0;
 
     /**
      * Creates the blacklist file.
+     *
      * @param  string $abuseIpDbJsonFilePath    The full path to the file containing the AbuseIPDB response.
      * @param  string $localCustomBlacklistPath The full path to the local custom file containing deny statements.
      * @return string                           The string response.
@@ -87,6 +92,7 @@ class CreateBlacklist
 
     /**
      * Checks the $abuseIpDbJsonFilePath.
+     *
      * @param  string $abuseIpDbJsonFilePath
      * @throws Exception
      * @return null
@@ -103,6 +109,7 @@ class CreateBlacklist
 
     /**
      * Checks the $localCustomBlacklistPath.
+     *
      * @param  string $localCustomBlacklistPath
      * @throws Exception
      * @return null
@@ -122,6 +129,7 @@ class CreateBlacklist
 
     /**
      * Loads the local custom blacklist file.
+     *
      * @param  string $localCustomBlacklistPath The path to the custom blacklist.
      * @return null
      */
@@ -138,6 +146,7 @@ class CreateBlacklist
 
     /**
      * Use with array_map to get the AbuseIpDB deny list.
+     *
      * @param  array $ipObject The IP address object.
      * @return null
      */
@@ -158,6 +167,7 @@ class CreateBlacklist
 
     /**
      * Used with the array_map to filter the custom deny list.
+     *
      * @param  string $line The singular line from the custom blacklist.
      * @return null
      */
@@ -179,6 +189,7 @@ class CreateBlacklist
 
     /**
      * Gets just the ip address from a string.
+     *
      * @param  string $string The ip address string to filter: deny 00.00.00.00;
      * @return string         The filtered ip address.
      */
@@ -189,6 +200,7 @@ class CreateBlacklist
 
     /**
      * Removes the file created from the API request.
+     *
      * @return null
      */
     private function unlinkAbuseIpDbResponseFile()
