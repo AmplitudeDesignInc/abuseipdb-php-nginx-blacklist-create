@@ -13,6 +13,9 @@ function is_readable($filename)
     return true;
 }
 
+/**
+ * @covers \App\CreateBlacklist
+ */
 class CreateBlacklistTest extends TestCase
 {
     /**
@@ -38,6 +41,7 @@ class CreateBlacklistTest extends TestCase
 
     /**
      * This is the positive AbuseIPDB response test.
+     *
      * @return null
      */
     public function testCreateNginxBlacklist()
@@ -58,6 +62,7 @@ class CreateBlacklistTest extends TestCase
 
     /**
      * This is the positive AbuseIPDB response test.
+     *
      * @return null
      */
     public function testMissingCustomNginxBlacklist()
@@ -71,6 +76,7 @@ class CreateBlacklistTest extends TestCase
 
     /**
      * Tests if the response is null from AbuseIPDB
+     *
      * @return null
      */
     public function testNullResponseCreateNginxBlacklist()
@@ -84,6 +90,7 @@ class CreateBlacklistTest extends TestCase
 
     /**
      * This tests if the AbuseIPDB returns errors.
+     *
      * @return null
      */
     public function testErrorResponseCreateNginxBlacklist()
@@ -97,6 +104,7 @@ class CreateBlacklistTest extends TestCase
 
     /**
      * Tests if there is not confidence score (edge case).
+     *
      * @return null
      */
     public function testNoConfidenceScoreCreateNginxBlacklist()
@@ -110,6 +118,7 @@ class CreateBlacklistTest extends TestCase
 
     /**
      * Test for when the local blacklist file isn't readable.
+     *
      * @return null
      */
     public function testCheckLocalBlacklistPath()
@@ -123,6 +132,7 @@ class CreateBlacklistTest extends TestCase
 
     /**
      * Test for when the AbuseIPDB file isn't readable.
+     *
      * @return null
      */
     public function testCheckAbuseIpDbJsonFilePathNotFound()
@@ -136,6 +146,7 @@ class CreateBlacklistTest extends TestCase
 
     /**
      * Test for when the AbuseIPDB file isn't readable.
+     *
      * @return null
      */
     public function testCheckAbuseIpDbJsonFilePathNotReadable()
@@ -147,6 +158,11 @@ class CreateBlacklistTest extends TestCase
         );
     }
 
+    /**
+     * Test if the file cannot be output to the rootPath.
+     *
+     * @return null
+     */
     public function testCannotPutFileForOutput()
     {
         $this -> expectException('\Exception');
@@ -159,6 +175,7 @@ class CreateBlacklistTest extends TestCase
 
     /**
      * Tests the unlinkAbuseIpDbResponseFile method.
+     *
      * @return null
      */
     public function testUnlinkAbuseIpDbResponseFile()
