@@ -8,7 +8,7 @@ script: phpunit
 before_script:
     - travis_retry composer self-update
     - travis_retry composer install --no-interaction --prefer-source --dev
-
+    - cp config.dist.php config.php
 script:
     - vendor/bin/phpunit --coverage-clover=coverage.xml
 
