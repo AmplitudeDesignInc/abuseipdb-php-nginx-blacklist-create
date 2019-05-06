@@ -12,3 +12,15 @@ before_script:
 script:
     - vendor/bin/phpcs --standard=PSR2 --runtime-set ignore_warnings_on_exit true app/
     - vendor/bin/phpunit --coverage-clover=coverage.xml
+
+#after_script
+
+after_success:
+# Submit coverage report to https://codecov.io
+- bash <(curl -s https://codecov.io/bash)
+
+## Monitor only these branches
+branches:
+  only:
+  - master
+  - dev
