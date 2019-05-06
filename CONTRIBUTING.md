@@ -12,4 +12,6 @@
 
 6. Check the phpunit coverage reports in build/coverage/
 
-7. Issue a pull request.
+7. Run "php vendor/bin/phpcs --standard=PSR2 app/" to validate changes as PSR2. The TravisCI build will only fail on errors, not warnings.
+
+8. Issue a pull request.
