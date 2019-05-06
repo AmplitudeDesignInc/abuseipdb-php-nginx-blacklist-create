@@ -1,5 +1,8 @@
 # abuseipdb-php-nginx-blacklist-create
-Creates a blacklist file for use in your Nginx configuration. Please see www.abuseipdb.com for API request limits. The "Free" account allows five requests/day. **All of the commands listed below require sudo or root privileges.**
+<p><a href="https://travis-ci.org/AmplitudeDesignInc/abuseipdb-php-nginx-blacklist-create?branch=master" target="_blank"><img src="https://travis-ci.org/AmplitudeDesignInc/abuseipdb-php-nginx-blacklist-create.svg?branch=master" alt="Build" /></a></p>
+<p>Creates a blacklist file for use in your Nginx configuration. Please see www.abuseipdb.com for API request limits. The "Free" account allows five requests/day. </p>
+
+<p>**All of the commands listed below require sudo or root privileges.**</p>
 
 **NOTES:**
 
