@@ -5,3 +5,4 @@ local-blacklist.conf
 build/
 /vendor/
 .DS_Store
+cache.properties
