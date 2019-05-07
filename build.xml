@@ -3,7 +3,7 @@
  <target name="build"
    depends="prepare,lint,phploc,pdepend,phpmd,phpmd-ci,phpcs-ci,phpcpd,phpdox,phpunit"/>
  <target name="build-travis"
-   depends="lint, phpcs, phpunit"/>
+   depends="prepare, lint, phpcs, phpunit"/>
 
  <target name="build-parallel"
    depends="prepare,lint,tools-parallel,phpunit"/>
