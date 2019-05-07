@@ -11,7 +11,7 @@ before_script:
     - cp config.dist.php config.php
 
 script:
-    - ant build
+    - ant build-travis
 
 #after_script
 

@@ -97,7 +97,8 @@ class CreateBlacklist
      * @throws Exception
      * @return null
      */
-    private function checkAbuseIpDbJsonFilePath($abuseIpDbJsonFilePath){
+    private function checkAbuseIpDbJsonFilePath($abuseIpDbJsonFilePath)
+    {
         if (!is_file($abuseIpDbJsonFilePath)) {
             throw new Exception(PHP_EOL."The AbuseIPDb json file path, ".$abuseIpDbJsonFilePath.", was not found.".PHP_EOL, 1);
         }
