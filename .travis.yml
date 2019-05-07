@@ -10,11 +10,8 @@ before_script:
     - travis_retry composer install --no-interaction --prefer-source
     - cp config.dist.php config.php
 
-before_install:
-    - ant -v
 script:
-    - vendor/bin/phpcs --standard=PSR2 --runtime-set ignore_warnings_on_exit true app/
-    - vendor/bin/phpunit --coverage-clover=coverage.xml
+    - ant build
 
 #after_script
 
